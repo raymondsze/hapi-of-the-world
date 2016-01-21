@@ -19,7 +19,6 @@ Stateless ES7 style Hapi restful API Server sample
 <a href = "https://github.com/hapijs/inert">inert</a>  
 <a href = "https://github.com/hapijs/joi">hapi</a>  
 <a href = "https://github.com/pebble/joi-objectid">joi-objectid</a>  
-<a href = "https://github.com/pebble/joi-objectid">joi-objectid</a>  
 <a href = "https://github.com/auth0/node-jsonwebtoken">jsonwebtoken</a>  
 <a href = "https://github.com/hapijs/lab">lab</a>  
 <a href = "https://github.com/lodash/lodash">lodash</a>  
@@ -43,7 +42,7 @@ Yes, many TODOs in my mind, will update here if I have spare time.
 1. Add Like/Vote system to document, use MQ to handle traffic  
 2. Build separate frontend(server view) server to handle server side rendering for React view.  
 3. Use React and Redux with Semantic UI to build single page website (frontend)  
-4. ....  
+4. Testcases with Lab and Code  
 
 #### Why need to put authorization header everytime? Why not enable cookies/session?  
 I would like to make completely stateless restful api server.   
