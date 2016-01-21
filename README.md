@@ -38,9 +38,14 @@ node ./server.js
 go to browser, swagger is pluged, you can visit localhost:8080/documentation  
   
 ## FAQ  
-Is this still developing?  
+#### Is this still developing?  
 Yes, many TODOs in my mind, will update here if I have spare time.  
+1. Add Like/Vote system to document, use MQ to handle traffic  
+2. Build separate frontend(server view) server to handle server side rendering for React view.  
+3. Use React and Redux with Semantic UI to build single page website (frontend)  
+4. ....  
 
-Why need to put authorization header everytime? Why not enable cookies/session?  
+#### Why need to put authorization header everytime? Why not enable cookies/session?  
 I would like to make completely stateless restful api server.   
-Without cookies and session validation, we could make mobile and web using the same api without concern of CSRF attack.  
+Without cookies and session validation, we could make mobile and web using the same api without concern of CSRF attack.
+If I understand wrong, please kindly tell me.
