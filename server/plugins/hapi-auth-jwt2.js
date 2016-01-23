@@ -2,7 +2,7 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2016-01-01 03:13:36
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-22 01:41:26
+* @Last Modified time: 2016-01-24 03:18:55
 */
 // This plugin is used to enabled token authentication for user
 import HapiAuthJWT2 from 'hapi-auth-jwt2';
@@ -30,18 +30,16 @@ export default {
 				const asyncFunc = async function () {
 					const invalidTokenError = Boom.unauthorized('Token is invalid or expired. Please login again.');
 					// the request.server.methods.session is to obtain cached session in server
-					// subject is not provided, if not exist in cache, the subject would be empty object.
+					// session is not provided, if not exist in cache, error with be thrown.
 					const session = await request.server.methodsAsync.session(decoded.id);
-					if (decoded.userId === session.userId) {
-						// if the session exist, continue to next
-						return session.subject;
+					if (!(decoded.userId === session.userId)) {
+						throw Error(invalidTokenError);
 					}
-					throw Error(invalidTokenError);
 				};
-				asyncFunc().then(result => {
-					next(null, true, result);
+				asyncFunc().then(() => {
+					next(null, true);
 				}).catch(err => {
-					next(null, false);
+					next(err, false);
 				});
 			}
 		}));

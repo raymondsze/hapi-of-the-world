@@ -2,11 +2,12 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2016-01-01 03:05:37
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-21 22:15:53
+* @Last Modified time: 2016-01-24 03:12:45
 */
 
 import Mongoose from 'mongoose';
 import Promise from 'bluebird';
+import bcrypt from 'bcrypt';
 Mongoose.Promise = Promise;
  
 const schema = new Mongoose.Schema({
@@ -31,6 +32,12 @@ const schema = new Mongoose.Schema({
 		default: 'USER'
 	}
 }, {timestamps: true, versionKey: false});
+
+// After validate hook
+schema.post('validate', (doc) => {
+	// encrypt the password
+	doc.password = bcrypt.hashSync(doc.password, 10);
+});
 
 // Remove the password information when toObject()
 schema.options.toObject = {

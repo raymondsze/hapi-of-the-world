@@ -2,7 +2,7 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2015-12-30 01:41:05
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-22 01:35:50
+* @Last Modified time: 2016-01-24 02:53:58
 */
 
 import aguid from 'aguid';
@@ -11,6 +11,8 @@ import Joi from'joi';
 import Promise from 'bluebird';
 import bcrypt from 'bcrypt';
 import User from '../models/user';
+import config from '../config';
+
 const bcryptAsync = Promise.promisifyAll(bcrypt);
 
 const Errors = {
@@ -33,8 +35,8 @@ export default {
 		description: 'Login to the webpage to get the access token, the access token is cached in server side for later verification.',
 		validate: {
 			payload: {
-				password: Joi.string().regex(/^[a-zA-Z0-9]{8,30}$/).required(),
-				email: Joi.string().email().required()
+				password: Joi.string().required(),
+				email: Joi.string().required()
 			}
 		},
 		handler: {
@@ -53,7 +55,7 @@ export default {
 						const sessionId = aguid();
 						const session = await request.server.methodsAsync.session(sessionId, {id: sessionId, userId: user.id, role: user.role});
 						const token = await request.server.methodsAsync.sign(session);
-						return reply().header('authorization', token);
+						return reply().header('authorization', token).state('access_token', token, config.auth.cookieOptions);
 						// DO NOT SET COOKIE TO PREVENT XSRF ATTACK
 						// .state(cookieKey, token, request.cookieOptions);
 					}

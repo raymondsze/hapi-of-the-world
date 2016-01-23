@@ -2,7 +2,7 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2015-12-30 02:11:09
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-22 01:41:01
+* @Last Modified time: 2016-01-24 03:06:21
 */
 
 import util from 'util';
@@ -83,7 +83,7 @@ export default {
 
 				const result = await Document.find(predicate).sort(sort).skip((page - 1) * pageSize).limit(pageSize).exec();
 				if (!result) {
-					return reply(Boom.notFound(Errors.documentListNotFound));
+					throw Boom.notFound(Errors.documentListNotFound);
 				}
 				reply(_.map(result, doc => doc.toObject()));
 			}
@@ -102,7 +102,7 @@ export default {
 			async: async function (request, reply) {
 				const result = await Document.findById(request.params.documentId).exec();
 				if (!result) {
-					return reply(Boom.notFound(util.format(Errors.documentNotFound, request.params.documentId)));
+					throw Boom.notFound(util.format(Errors.documentNotFound, request.params.documentId));
 				}
 				reply(result);
 			}
@@ -129,10 +129,10 @@ export default {
 				const userId = request.auth.credentials.userId;
 				const existingDocument = await Document.findById(request.params.documentId).exec();
 				if (!existingDocument) {
-					return reply(Boom.notFound(util.format(Errors.documentNotFound)));
+					throw Boom.notFound(util.format(Errors.documentNotFound));
 				}
 				if (existingDocument.createdBy !== userId) {
-					return reply(Boom.unauthorized(util.format(Errors.notAuthor)));
+					throw Boom.unauthorized(util.format(Errors.notAuthor));
 				}
 				await existingDocument.update(request.payload);
 				const result = await Document.findById(request.params.documentId).exec();
@@ -160,10 +160,10 @@ export default {
 				const userId = request.auth.credentials.userId;
 				const existingDocument = await Document.findById(request.params.documentId).exec();
 				if (!existingDocument) {
-					return reply(Boom.notFound(util.format(Errors.documentNotFound)));
+					throw Boom.notFound(util.format(Errors.documentNotFound));
 				}
 				if (existingDocument.createdBy !== userId) {
-					return reply(Boom.unauthorized(util.format(Errors.notAuthor)));
+					throw Boom.unauthorized(util.format(Errors.notAuthor));
 				}
 				const result = await existingDocument.remove();
 				return reply(result.toObject());

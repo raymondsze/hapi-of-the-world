@@ -2,9 +2,10 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2016-01-03 01:11:04
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-22 00:01:53
+* @Last Modified time: 2016-01-24 02:29:38
 */
 
+import _ from 'lodash';
 import JWT from 'jsonwebtoken';
 import config from '../config';
 
@@ -18,6 +19,9 @@ export default [
 		 * @return {object}           session
 		 */
 		method: async function (id, session) {
+			if (_.isUndefined(session)) {
+				throw Error('Token is invalid or expired.');
+			}
 			return session;
 		},
 		options: {

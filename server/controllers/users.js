@@ -2,7 +2,7 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2015-12-30 02:11:09
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-22 00:10:06
+* @Last Modified time: 2016-01-24 03:13:34
 */
 
 import util from 'util';
@@ -59,17 +59,15 @@ export default {
 			async: async function (request, reply) {
 				const existingUser = await User.findOne({email: request.payload.email}).exec();
 				if (existingUser) {
-					return reply(Boom.forbidden(util.format(Errors.emailDuplicated, request.payload.email)));
+					throw Boom.forbidden(util.format(Errors.emailDuplicated, request.payload.email));
 				}
 				const validateResult = Joi.any().valid(config.acl.roles).validate(request.payload.role);
 				if (!validateResult.error) {
-					const user = new User(_.merge(request.payload, {
-						password: bcrypt.hashSync(request.payload.password, 10)
-					}));
+					const user = new User(request.payload);
 					const result = await user.save();
 					return reply(result.toObject());
 				}
-				throw validateResult.error;
+				throw Boom.forbidden(validateResult.error);
 			}
 		}
 	},
@@ -94,7 +92,7 @@ export default {
 
 				const result = await User.find(predicate).sort(sort).skip((page - 1) * pageSize).limit(pageSize).exec();
 				if (!result) {
-					return reply(Boom.notFound(Errors.userListNotFound));
+					throw Boom.notFound(Errors.userListNotFound);
 				}
 				reply(_.map(result, user => user.toObject()));
 			}
@@ -113,7 +111,7 @@ export default {
 			async: async function (request, reply) {
 				const result = await User.findById(request.params.userId).exec();
 				if (!result) {
-					return reply(Boom.notFound(util.format(Errors.userNotFound, request.params.userId)));
+					throw Boom.notFound(util.format(Errors.userNotFound, request.params.userId));
 				}
 				reply(result.toObject());
 			}
@@ -141,15 +139,13 @@ export default {
 			async: async function (request, reply) {
 				const {role, userId} = request.auth.credentials;
 				if (role !== 'ADMIN' && userId !== request.params.userId) {
-					return reply(Boom.forbidden(Errors.unableToUpdateOtherUser));
+					throw Boom.forbidden(Errors.unableToUpdateOtherUser);
 				}
 				const existingUser = await User.findById(request.params.userId).exec();
 				if (!existingUser) {
-					return reply(Boom.notFound(util.format(Errors.userNotFound, request.params.userId)));
+					throw Boom.notFound(util.format(Errors.userNotFound, request.params.userId));
 				}
-				await existingUser.update(_.merge(request.payload, request.payload.password ? {
-					password: bcrypt.hashSync(request.payload.password, 10)
-				} : {}));
+				await existingUser.update(request.payload);
 				const result = await User.findById(request.params.userId).exec();
 				return reply(result.toObject());
 			}
@@ -174,7 +170,7 @@ export default {
 			async: async function (request, reply) {
 				const existingUser = await User.findById(request.params.userId).exec();
 				if (!existingUser) {
-					return reply(Boom.notFound(util.format(Errors.userNotFound, request.params.userId)));
+					throw Boom.notFound(util.format(Errors.userNotFound, request.params.userId));
 				}
 				const result = await existingUser.remove();
 				return reply(result.toObject());
