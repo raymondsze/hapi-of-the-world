@@ -2,7 +2,7 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2016-01-01 03:13:36
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-24 03:18:55
+* @Last Modified time: 2016-02-05 14:40:41
 */
 // This plugin is used to enabled token authentication for user
 import HapiAuthJWT2 from 'hapi-auth-jwt2';
@@ -33,13 +33,13 @@ export default {
 					// session is not provided, if not exist in cache, error with be thrown.
 					const session = await request.server.methodsAsync.session(decoded.id);
 					if (!(decoded.userId === session.userId)) {
-						throw Error(invalidTokenError);
+						throw invalidTokenError;
 					}
 				};
 				asyncFunc().then(() => {
 					next(null, true);
-				}).catch(err => {
-					next(err, false);
+				}).catch(() => {
+					next(null, false);
 				});
 			}
 		}));
