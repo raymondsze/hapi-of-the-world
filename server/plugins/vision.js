@@ -2,7 +2,7 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2016-01-21 04:12:02
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-01-21 05:09:38
+* @Last Modified time: 2016-02-23 01:28:59
 */
 // This plugin is prerequist of hapi-swagger
 import Vision from 'vision';
@@ -13,8 +13,8 @@ export default {
 	},
 	next: function (server, error) {
 		if (error) {
-			server.log(['error'], 'Fail to install plugin: vision...');
+			return server.log(['error'], 'Fail to install plugin: vision...');
 		}
-		server.log(['info'], 'Installed plugin: vision.');
+		return server.log(['info'], 'Installed plugin: vision.');
 	}
 };

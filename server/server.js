@@ -2,9 +2,8 @@
 * @Author: Sze Ka Wai Raymond (FakeC)
 * @Date:   2015-12-31 03:06:43
 * @Last Modified by:   Sze Ka Wai Raymond (FakeC)
-* @Last Modified time: 2016-02-05 14:36:53
+* @Last Modified time: 2016-02-23 01:33:30
 */
-import {format} from 'util';
 import _ from 'lodash';
 import Hapi from 'hapi';
 import Mongoose from 'mongoose';
@@ -24,7 +23,7 @@ hapiServer.connection({host: server.host, port: server.port});
  * @return {array} middlewares
  */
 const registerMiddlewares = async function () {
-	hapiServer.log(['info'], format('...Register middlewares'));
+	hapiServer.log(['info'], '...Register middlewares');
 	const register = index => {
 		const plugin = middlewares[index];
 		if (plugin) {
@@ -48,11 +47,11 @@ const registerMiddlewares = async function () {
  * @return {array} methods
  */
 const registerMethods = async function () {
-	hapiServer.log(['info'], format('...Register server methods'));
+	hapiServer.log(['info'], '...Register server methods');
 	const modules = _.flattenDeep(methods);
 	let methodsAsync = {};
 	_.each(modules, methodConfig => {
-		hapiServer.log(['info'], format('Register server method: %s.', methodConfig.name));
+		hapiServer.log(['info'], `Register server method: ${methodConfig.name}`);
 		const method = methodConfig.method;
 		const thunky = function (...args) {
 			const next = args[args.length - 1];
@@ -87,7 +86,7 @@ const registerMethods = async function () {
  * @return {array} methods
  */
 const registerRoutes = async function () {
-	hapiServer.log(['info'], format('...Register routes'));
+	hapiServer.log(['info'], '...Register routes');
 	// register custom handler to support async handler
 	hapiServer.handler('async', function (route, asyncHandler) {
 		return function (request, reply) {
@@ -99,7 +98,7 @@ const registerRoutes = async function () {
 	});
 	const modules = _.flattenDeep(routes);
 	_.each(modules, routeConfig => {
-		hapiServer.log(['info'], format('Register route: %s %s.', routeConfig.method, routeConfig.path));
+		hapiServer.log(['info'], `Register route: ${routeConfig.method} ${routeConfig.path}.`);
 		hapiServer.route(routeConfig);
 	});
 	return modules;
@@ -110,11 +109,11 @@ const registerRoutes = async function () {
  * @return {array} models
  */
 const registerDBModels = async function () {
-	hapiServer.log(['info'], format('...Register database models'));
+	hapiServer.log(['info'], '...Register database models');
 	const modules = _.flattenDeep(database.models);
 	let models = {};
 	_.each(modules, model => {
-		hapiServer.log(['info'], format('Register database model: %s.', model.modelName));
+		hapiServer.log(['info'], `Register database model: ${model.modelName}`);
 		models[model.modelName] = model;
 	});
 	hapiServer.decorate('server', 'models', models);
@@ -126,7 +125,7 @@ const registerDBModels = async function () {
  * @return {object} mongoose
  */
 const connectToDatabase = async function () {
-	hapiServer.log(['info'], format('...Connect to database'));
+	hapiServer.log(['info'], '...Connect to database');
 	const {username, password, port: dbPort, host: dbHost, database: instance, options = {}} = database;
 	const mongodbPath = username ?
 		'mongodb://' + username + ':' + password + '@' + dbHost + ':' + dbPort + '/' + instance :
@@ -136,7 +135,7 @@ const connectToDatabase = async function () {
 			if (err) {
 				return reject(err);
 			}
-			hapiServer.log(['info'], format('Connection with database %s succeeded.', mongodbPath));
+			hapiServer.log(['info'], `Connection with database ${mongodbPath} succeeded.`);
 			hapiServer.decorate('server', 'mongoose', Mongoose);
 			resolve(Mongoose);
 		})
@@ -164,9 +163,9 @@ const startServer = async function () {
 };
 
 startServer().then(() => {
-	hapiServer.log(['info'], format('Server started at %s.', hapiServer.info.uri));
+	hapiServer.log(['info'], `Server started at ${hapiServer.info.uri}.`);
 }).catch((err) => {
-	hapiServer.log(['error'], format('Fail to start server at %s due to unexpected error', hapiServer.info.uri));
+	hapiServer.log(['error'], `Fail to start server at ${hapiServer.info.uri} due to unexpected error.`);
 	hapiServer.log(['error'], err);
 });
 
